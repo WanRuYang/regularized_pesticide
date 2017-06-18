@@ -137,6 +137,8 @@ WITH t AS (
     SELECT *, 'SODIUM TETRATHIOCARBONATE' AS chem FROM pur.ai_nm WHERE dpr_nm ~ 'SODIUM TETRATHIOCARBONATE'
 	UNION 
 	SELECT *, 'THIOPHANATE METHYL'  AS chem FROM pur.ai_nm WHERE dpr_nm ~  'THIOPHANATE METHYL'
+	UNION 
+	SELECT *, 'IMIDACLOPRID'::text AS chem FROM pur.ai_nm WHERE dpr_nm ~ 'IMIDACLOPRID'
 	)
 SELECT DISTINCT *
 INTO lynn.croplist
@@ -149,3 +151,14 @@ SELECT l.ai_cd, use_type, c.chem as chem_grp
 	FROM lynn.croplist c
 	INNER JOIN pur.ai_use_type_larry l ON l.ai_cd = c.ai_cd
 	ORDER BY chem_grp;
+
+--DROP TABLE IF EXISTS lynn.croplist2 ;
+--DROP TABLE IF EXISTS  lynn.chemlist2 ;
+--SELECT *, 'IMIDACLOPRID'::text AS chem
+--INTO lynn.croplist2 
+--FROM pur.ai_nm WHERE dpr_nm ~ 'IMIDACLOPRID';
+--
+--SELECT l.ai_cd, use_type, c.chem as chem_grp 
+--INTO lynn.chemlist2 
+--FROM lynn.croplist2 c 
+--	INNER JOIN pur.ai_use_type_larry l ON l.ai_cd = c.ai_cd ORDER BY chem_grp;
