@@ -79,7 +79,8 @@ UPDATE lynn.comtrs_fld_sum_uc SET km2_treated = km2_planted WHERE km2_treated > 
 
 ---- COPY DATA WITH 0 PLANTED AREA TO ADD BACK TO FINAL RESULT 
 DROP TABLE IF EXISTS lynn.comtrs_to_add_uc;
---SELECT * INTO lynn.comtrs_to_add_uc FROM lynn.comtrs_fld_sum_uc WHERE km2_PLANTED IS NULL OR km2_planted = 0;
+SELECT * INTO lynn.comtrs_to_add_uc FROM lynn.comtrs_fld_sum_uc WHERE km2_PLANTED IS NULL OR km2_planted = 0;
+
 
 DROP TABLE IF EXISTS lynn.un_counted_comtrs;
 SELECT year, comtrs, chem_code AS ai_cd, dpr_nm AS chem, county_cd AS county, 
@@ -95,12 +96,12 @@ UPDATE lynn.un_counted_comtrs SET km2_planted =5.2 WHERE km2_planted > 5.2;
 UPDATE lynn.un_counted_comtrs SET km2_treated = km2_planted WHERE km2_treated > km2_planted;
 
 -- SAVE THOS WITH 0 VALUES
-SELECT  year, comtrs, county, ai_cd, chem, kg, km2_planted, km2_treated  INTO lynn.comtrs_to_add_uc FROM lynn.comtrs_fld_sum_uc WHERE km2_PLANTED IS NULL OR km2_planted = 0
+SELECT  year, comtrs, county, ai_cd, chem, kg, km2_treated, km2_treated  INTO lynn.comtrs_to_add_uc FROM lynn.comtrs_fld_sum_uc WHERE km2_treated IS NULL OR km2_treated = 0
 UNION 
-SELECT year, comtrs, county, ai_cd, chem, kg, km2_planted, km2_treated FROM lynn.un_counted_comtrs WHERE km2_PLANTED IS NULL OR km2_planted = 0;     
+SELECT year, comtrs, county, ai_cd, chem, kg, km2_treated, km2_treated FROM lynn.un_counted_comtrs WHERE km2_treated IS NULL OR km2_treated = 0;     
 
-DELETE FROM lynn.comtrs_fld_sum_uc WHERE km2_PLANTED IS NULL OR km2_planted = 0;
-DELETE FROM lynn.un_counted_comtrs WHERE km2_PLANTED IS NULL OR km2_planted = 0;
+DELETE FROM lynn.comtrs_fld_sum_uc WHERE km2_treated IS NULL OR km2_treated = 0;
+DELETE FROM lynn.un_counted_comtrs WHERE km2_treated IS NULL OR km2_treated = 0;
 
 -- TRIM OUTLIER
 DROP TABLE IF EXISTS lynn.year_chem_trim_uc;

@@ -138,15 +138,34 @@ WITH t AS (
 	UNION 
 	SELECT *, 'THIOPHANATE METHYL'  AS chem FROM pur.ai_nm WHERE dpr_nm ~  'THIOPHANATE METHYL'
 	UNION 
-	SELECT *, 'IMIDACLOPRID'::text AS chem FROM pur.ai_nm WHERE dpr_nm ~ 'IMIDACLOPRID'
+	SELECT *, 'IMIDACLOPRID'::text AS chem FROM pur.ai_nm WHERE dpr_nm ~ 'IMIDACLOPRID'	
+	UNION 
+	SELECT *, upper('ACEPHATE')  AS chem FROM pur.ai_nm WHERE dpr_nm ~ upper('ACEPHATE')
+	UNION 
+	SELECT *, upper('formetenate hydrochloride')  AS chem FROM pur.ai_nm WHERE dpr_nm ~ upper('formetenate hydrochloride')
+	UNION 
+	SELECT *, upper('imizalil')  AS chem FROM pur.ai_nm WHERE dpr_nm ~ upper('imizalil')
+	UNION 
+	SELECT *, upper('Linuron')  AS chem FROM pur.ai_nm WHERE dpr_nm ~ upper('Linuron')
+	UNION 
+	SELECT *, upper('Nabam')  AS chem FROM pur.ai_nm WHERE dpr_nm ~ upper('Nabam')
+	UNION 
+	SELECT *, upper('Proamocard')  AS chem FROM pur.ai_nm WHERE dpr_nm ~ upper('Proamocard')
+	UNION 
+	SELECT *, upper('hydrochloride')  AS chem FROM pur.ai_nm WHERE dpr_nm ~ upper('hydrochloride')
+	UNION 
+	SELECT *, 'NEONICOTINOID' AS chem FROM pur.ai_nm WHERE ai_cd IN (5762,5792,3849,5129,5888,5598,5822)
+	UNION 
+	SELECT *, 'GLYPHOSATE' AS chem FROM pur.ai_nm WHERE ai_cd IN (2997, 1855, 2301, 2327, 2275, 5810, 5820, 5972)
 	)
+
 SELECT DISTINCT *
 INTO lynn.croplist
 FROM t 
 ORDER BY chem; 
 
 DROP TABLE IF EXISTS lynn.chemlist;
-SELECT l.ai_cd, use_type, c.chem as chem_grp 
+SELECT l.ai_cd, use_type, dpr_nm, c.chem as chem_grp 
 	INTO lynn.chemlist
 	FROM lynn.croplist c
 	INNER JOIN pur.ai_use_type_larry l ON l.ai_cd = c.ai_cd

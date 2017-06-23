@@ -20,41 +20,41 @@ Comparisons of the “raw” sums with the trimmed, adjusted sums were discussed
 **/
 
 
-DROP TABLE IF EXISTS  lynn.udc_fld_grp;
-CREATE TABLE lynn.udc_fld_grp(
-  year integer  NOT NULL,
-  field_id text NOT NULL, --REFERENCES lynn.fields ON DELETE CASCADE ON UPDATE CASCADE,
-  comtrs character varying(11) NOT NULL,
-  site_name text,
-  prodno integer,
-  chem_code integer,
-  --use_type character varying(30), skipped use type to avoid duplicate 6/17
-  prodchem_pct real, 
-  lbs_chm_used real,
-  lbs_prd_used real,
-  unit_of_meas text,
-  acre_planted real,
-  unit_planted text,
-  acre_treated real,
-  unit_treated text,
-  applic_dt date
-  --FOREIGN KEY(comtrs, field_id) REFERENCES lynn.fields (comtrs, field_id)
-);
-
-INSERT INTO lynn.udc_fld_grp(
-SELECT DISTINCT u.year, trim(u.grower_id)||'_'||trim(u.site_loc_id)||'_'||(u.site_code::text) AS field_id, u.comtrs,  
-	s.site_name, u.prodno, u.chem_code, u.prodchem_pct, u.lbs_chm_used, 
-	u.lbs_prd_used, u.unit_of_meas, u.acre_planted,
-	u.unit_planted, u.acre_treated, u.unit_treated, u.applic_dt
-FROM pur.udc_all u  --fields_clean
-	INNER JOIN lynn.fields_clean s ON trim(u.grower_id)||'_'||trim(u.site_loc_id)||'_'||(u.site_code::text) =  s.field_id
-   
-WHERE u.site_loc_id IS NOT NULL
-	AND u.grower_id IS NOT NULL
-	AND u.comtrs IS NOT NULL 
-	AND u.comtrs ~ '^[0-9]{2}[A-Z]{1}[0-9]{2}[A-Z]{1}[0-9]{2}[A-Z]{1}[0-9]{2}$' -- EXCLUDE DATA WITH INCOMPLETE section INFO
-
-ORDER BY u.year, field_id, comtrs, applic_dt);
+--DROP TABLE IF EXISTS  lynn.udc_fld_grp;
+--CREATE TABLE lynn.udc_fld_grp(
+--  year integer  NOT NULL,
+--  field_id text NOT NULL, --REFERENCES lynn.fields ON DELETE CASCADE ON UPDATE CASCADE,
+--  comtrs character varying(11) NOT NULL,
+--  site_name text,
+--  prodno integer,
+--  chem_code integer,
+--  --use_type character varying(30), skipped use type to avoid duplicate 6/17
+--  prodchem_pct real, 
+--  lbs_chm_used real,
+--  lbs_prd_used real,
+--  unit_of_meas text,
+--  acre_planted real,
+--  unit_planted text,
+--  acre_treated real,
+--  unit_treated text,
+--  applic_dt date
+--  --FOREIGN KEY(comtrs, field_id) REFERENCES lynn.fields (comtrs, field_id)
+--);
+--
+--INSERT INTO lynn.udc_fld_grp(
+--SELECT DISTINCT u.year, trim(u.grower_id)||'_'||trim(u.site_loc_id)||'_'||(u.site_code::text) AS field_id, u.comtrs,  
+--	s.site_name, u.prodno, u.chem_code, u.prodchem_pct, u.lbs_chm_used, 
+--	u.lbs_prd_used, u.unit_of_meas, u.acre_planted,
+--	u.unit_planted, u.acre_treated, u.unit_treated, u.applic_dt
+--FROM pur.udc_all u  --fields_clean
+--	INNER JOIN lynn.fields_clean s ON trim(u.grower_id)||'_'||trim(u.site_loc_id)||'_'||(u.site_code::text) =  s.field_id
+--   
+--WHERE u.site_loc_id IS NOT NULL
+--	AND u.grower_id IS NOT NULL
+--	AND u.comtrs IS NOT NULL 
+--	AND u.comtrs ~ '^[0-9]{2}[A-Z]{1}[0-9]{2}[A-Z]{1}[0-9]{2}[A-Z]{1}[0-9]{2}$' -- EXCLUDE DATA WITH INCOMPLETE section INFO
+--
+--ORDER BY u.year, field_id, comtrs, applic_dt);
 
 
 -- AGGREFATE TO COMTRS AND UPDATE ACRE 
@@ -79,8 +79,8 @@ UPDATE lynn.comtrs_fld_sum SET km2_treated = km2_planted WHERE km2_treated > km2
 
 -- COPY DATA WITH 0 PLANTED AREA TO ADD BACK TO FINAL RESULT 
 DROP TABLE IF EXISTS lynn.comtrs_to_add;
-SELECT * INTO lynn.comtrs_to_add FROM lynn.comtrs_fld_sum WHERE km2_PLANTED IS NULL OR km2_planted = 0;
-DELETE FROM lynn.comtrs_fld_sum WHERE km2_PLANTED IS NULL OR km2_planted = 0;
+SELECT * INTO lynn.comtrs_to_add FROM lynn.comtrs_fld_sum WHERE km2_treated IS NULL OR km2_treated = 0;
+DELETE FROM lynn.comtrs_fld_sum WHERE km2_treated IS NULL OR km2_treated = 0;
 
 
 -- TRIM OUTLIER
